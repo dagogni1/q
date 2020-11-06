@@ -2,12 +2,12 @@
 
 set -x
 
-NS=$(sed '6!d' variables.conf)
-VETH=$(sed '7!d' variables.conf)
-VPEER=$(sed '8!d' variables.conf)
-VETH_ADDR=$(sed '9!d' variables.conf)
-VPEER_ADDR=$(sed '10!d' variables.conf)
-bad_tun=$(sed '5!d' variables.conf)
+NS=$(sed '8!d' variables.conf)
+VETH=$(sed '9!d' variables.conf)
+VPEER=$(sed '10!d' variables.conf)
+VETH_ADDR=$(sed '11!d' variables.conf)
+VPEER_ADDR=$(sed '12!d' variables.conf)
+bad_tun=$(sed '7!d' variables.conf)
 
 dist=$(cat /tmp/dist)
 # Create namespace
@@ -38,12 +38,9 @@ sudo iptables -t nat -A POSTROUTING -s ${VPEER_ADDR}/24 -o $bad_tun -j MASQUERAD
 sudo iptables -A FORWARD -i $bad_tun -o ${VETH} -j ACCEPT
 sudo iptables -A FORWARD -o $bad_tun -i ${VETH} -j ACCEPT
 
-
-ls /dev/pts/ | cat > /tmp/ttyold && xfce4-terminal --geometry=62x24 --hide-scrollbar --hide-toolbar && xfce4-terminal --geometry=62x24 --hide-scrollbar --hide-toolbar && xfce4-terminal --geometry=62x24 --hide-scrollbar --hide-toolbar && ls /dev/pts/ | cat > /tmp/ttynew && grep -vf /tmp/ttyold /tmp/ttynew | sort -u > /tmp/tty
+ls /dev/pts/ | cat > /tmp/ttyold && xfce4-terminal --geometry=62x24 --hide-scrollbar --hide-toolbar && xfce4-terminal --geometry=62x24 --hide-scrollbar --hide-toolbar && ls /dev/pts/ | cat > /tmp/ttynew && grep -vf /tmp/ttyold /tmp/ttynew | sort -u > /tmp/tty
 dns=$(sed '1!d' /tmp/tty)
 namespace=$(sed '2!d' /tmp/tty)
-tor_nyx=$(sed '3!d' /tmp/tty)
-sudo ./ttyecho -n /dev/pts/$tor_nyx "sudo nyx"
 sudo ./ttyecho -n /dev/pts/$dns "sudo ip netns exec $NS sudo -u $USER -i"
 sudo ./ttyecho -n /dev/pts/$namespace "sudo ip netns exec $NS sudo -u $USER -i"
 sudo ./ttyecho -n /dev/pts/$dns sudo dnscrypt-proxy

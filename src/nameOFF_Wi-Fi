@@ -2,31 +2,26 @@
 
 set -x
 
-NS=$(sed '6!d' variables.conf)
-VETH=$(sed '7!d' variables.conf)
-VPEER=$(sed '8!d' variables.conf)
-VETH_ADDR=$(sed '9!d' variables.conf)
-VPEER_ADDR=$(sed '10!d' variables.conf)
-wifi_iface=$(sed '11!d' variables.conf)
+NS=$(sed '8!d' variables.conf)
+VETH=$(sed '9!d' variables.conf)
+VPEER=$(sed '10!d' variables.conf)
+VETH_ADDR=$(sed '11!d' variables.conf)
+VPEER_ADDR=$(sed '12!d' variables.conf)
+wifi_iface=$(sed '13!d' variables.conf)
 
 
 wifi_phy=$(cat /tmp/wifi_phy)
 dns=$(sed '1!d' /tmp/tty)
 hotspot=$(sed '2!d' /tmp/tty)
-tor_nyx=$(sed '3!d' /tmp/tty)
 
 dns_pid=$(ps -ft pts/$dns | awk 'NR==6{print$2}')
 sudo kill -2 $dns_pid
 sudo ./create_ap --stop $wifi_iface
-tor_nyx_pid=$(ps -ft pts/$tor_nyx | awk 'NR==3{print$2}')
-sudo kill -2 $tor_nyx_pid
 
 sudo ./ttyecho -n /dev/pts/$dns exit
 sudo ./ttyecho -n /dev/pts/$dns exit
 sudo ./ttyecho -n /dev/pts/$hotspot exit
 sudo ./ttyecho -n /dev/pts/$hotspot exit
-sudo ./ttyecho -n /dev/pts/$tor_nyx exit
-
 # Remove Wi-Fi iface from namespace
 sudo ip netns exec $NS iw phy $wifi_phy set netns 1
 

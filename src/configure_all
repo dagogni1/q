@@ -2,11 +2,34 @@
 cd "$( dirname "${BASH_SOURCE[0]}")"
 echo "This Is configuration file DON'T REMOVE IT" | cat > variables.conf
 
-read -p "Enter localhost IP (127.0.0.1) > " local_ip
-echo $local_ip | cat >> variables.conf
+read -p "Enter Proxy IP (89.243.157.254) > " remote_ip
+echo $remote_ip | cat >> variables.conf
 
-read -p "Enter Tor local port (9050) > " local_port
-echo $local_port | cat >> variables.conf
+read -p "Enter Proxy port (1080) > " remote_port
+echo $remote_port | cat >> variables.conf
+
+read -p "Proxy with login pass? (y/n) > " proxy_logpass
+
+if [[ ! $proxy_logpass =~ ^[Nn]$ ]]; 
+then read -p "Enter Proxy login (user) > " login
+	echo $login | cat >> variables.conf
+	read -p "Enter Proxy password (pass) > " pass
+	echo $pass | cat >> variables.conf
+	sudo sed -i '15c\log_pass=\"--username $login --password $pass\"'  proxyON_sys
+	sudo sed -i '15c\log_pass=\"--username $login --password $pass\"' proxyON_name
+	sudo sed -i '15c\log_pass=\"--username $login --password $pass\"' proxyON_name_sys
+	sudo sed -i '15c\log_pass=\"--username $login --password $pass\"' proxyON_name_wifi
+	sudo sed -i '15c\log_pass=\"--username $login --password $pass\"' proxyON_name_sys_wifi
+
+elif [[ ! $proxy_logpass =~ ^[Yy]$ ]]; 
+then echo   | cat >> variables.conf
+	echo   | cat >> variables.conf
+	sudo sed -i '15c\log_pass=' proxyON_sys
+	sudo sed -i '15c\log_pass=' proxyON_name
+	sudo sed -i '15c\log_pass=' proxyON_name_sys
+	sudo sed -i '15c\log_pass=' proxyON_name_wifi
+	sudo sed -i '15c\log_pass=' proxyON_name_sys_wifi
+fi
 
 read -p "Enter bind interface (veth1) > " bind_iface
 echo $bind_iface | cat >> variables.conf
@@ -43,3 +66,4 @@ echo $wifi_reg | cat >> variables.conf
 
 read -p "Enter hotspot MAC (46:03:08:01:89:55) > " wifi_mac
 echo $wifi_mac | cat >> variables.conf
+
